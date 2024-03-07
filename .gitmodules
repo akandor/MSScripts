@@ -1,0 +1,6 @@
+[submodule "library/Posh-ACME"]
+	path = library/Posh-ACME
+	url = https://github.com/rmbolger/Posh-ACME.git
+[submodule "library/ImportExcel"]
+	path = library/ImportExcel
+	url = https://github.com/dfinke/ImportExcel.git
