@@ -1,5 +1,5 @@
-# NewTeamsUser.ps1
-# Reads out the policies and you can create a new MS Teams user.
+# NewResourceAccount.ps1
+# Reads out the policies and you can add a new number to a resource account.
 # REQUIREMENTS: License needs to be assigned before
 #
 # Version 1.0.1 (Build 1.0.1-2024-01-21)
@@ -60,7 +60,7 @@ do {
     Clear-Host
     Write-Host "==================================="
     Write-Host ""
-    Write-Host "     Create New MS Teams User"
+    Write-Host "   New MS Teams Resource Account"
     Write-Host ""
     Write-Host "==================================="
     Write-Host ""
@@ -91,24 +91,6 @@ do {
 
     Clear-Host
     Write-Host ""
-    Write-Host "    Calling Policies"
-    Write-Host ""
-    $callingPolicies = Get-CsTeamsCallingPolicy
-
-    $i = 1
-    foreach ($callingPolicy in $callingPolicies) {
-        $cp_identity = $callingPolicy.Identity -replace "Tag:",""
-        Write-Host "[$i] $cp_identity"
-        $i++
-    }
-    do {
-        $cp_no = Read-Host "Please choose a Calling Policy"
-    } while ([string]::IsNullOrEmpty($cp_no))
-
-    $used_cp = $callingPolicies[$cp_no-1].Identity -replace "Tag:",""
-
-    Clear-Host
-    Write-Host ""
     Write-Host "    Dial Plan"
     Write-Host ""
     $dialPlans = Get-CsTenantDialPlan
@@ -126,42 +108,6 @@ do {
     $used_dp = $dialPlans[$dp_no-1].Identity -replace "Tag:",""
 
     Clear-Host
-    Write-Host ""
-    Write-Host "    Call Hold Policy"
-    Write-Host ""
-    $callHoldPolicies = Get-CsTeamsCallHoldPolicy
-
-    $i = 1
-    foreach ($callHoldPolicy in $callHoldPolicies) {
-        $chp_identity = $callHoldPolicy.Identity -replace "Tag:",""
-        Write-Host "[$i] $chp_identity"
-        $i++
-    }
-    do {
-        $chp_no = Read-Host "Please choose a Call Hold Policy"
-    } while ([string]::IsNullOrEmpty($chp_no))
-
-    $used_chp = $callHoldPolicies[$chp_no-1].Identity -replace "Tag:",""
-
-    Clear-Host
-    Write-Host ""
-    Write-Host "    Emergency Call Routing Policy"
-    Write-Host ""
-    $emergencyCallRoutingPolicies = Get-CsTeamsEmergencyCallRoutingPolicy
-
-    $i = 1
-    foreach ($emergencyCallRoutingPolicy in $emergencyCallRoutingPolicies) {
-        $ecrp_identity = $emergencyCallRoutingPolicy.Identity -replace "Tag:",""
-        Write-Host "[$i] $ecrp_identity"
-        $i++
-    }
-    do {
-        $ecrp_no = Read-Host "Please choose a Emergency Call Routing Policy"
-    } while ([string]::IsNullOrEmpty($chp_no))
-
-    $used_ecrp = $emergencyCallRoutingPolicies[$ecrp_no-1].Identity -replace "Tag:",""
-
-    Clear-Host
     Write-Host "==================================="
     Write-Host ""
     Write-Host "          Check Values"
@@ -171,10 +117,7 @@ do {
     Write-Host "UserPrincipalName: $upn"
     Write-Host "Phone Number: $number"
     Write-Host "Voice Routing Policy: $used_vrp"
-    Write-Host "Calling Policy: $used_cp"
     Write-Host "Dial Plan: $used_dp"
-    Write-Host "Call Hold Policiy: $used_chp"
-    Write-Host "Emergency Call Routing Policy: $used_ecrp"
     Write-Host "----------------------------------------------"
     $yes = New-Object System.Management.Automation.Host.ChoiceDescription '&Yes', 'All values are correct. Proceed to create user.'
     $no = New-Object System.Management.Automation.Host.ChoiceDescription '&No', 'Value not correct. Start over!'
@@ -196,13 +139,10 @@ if($result -eq "0") {
         Set-CsPhoneNumberAssignment -Identity $upn -PhoneNumber $number -PhoneNumberType DirectRouting -ErrorAction Stop
         Grant-CsTenantDialPlan -Identity $upn -PolicyName $used_dp -ErrorAction Stop
         Grant-CsOnlineVoiceRoutingPolicy -Identity $upn -PolicyName $used_vrp -ErrorAction Stop
-        Grant-CsTeamsCallingPolicy -Identity $upn -PolicyName $used_cp -ErrorAction Stop #No resource
-        Grant-CsTeamsCallHoldPolicy -Identity $upn -PolicyName $used_chp -ErrorAction Stop #No Resource
-        Grant-CsTeamsEmergencyCallRoutingPolicy -Identity $upn -PolicyName $used_ecrp -ErrorAction Stop #No resource
-        Write-Host "User $upn created successfully!" -ForegroundColor Green
+        Write-Host "Resource Account $upn updated successfully!" -ForegroundColor Green
     }
     catch {
-        write-host "Cannot create user $upn" -ForegroundColor Red
+        write-host "Cannot update resource account $upn" -ForegroundColor Red
         write-host "Reason:"
         $error[0].Exception
         continue
