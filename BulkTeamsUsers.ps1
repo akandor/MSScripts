@@ -1,6 +1,9 @@
 # BulkTeamsUsers.ps1
 # Use CSV file of users to create users in bulk.
-# REQUIREMENTS: License needs to be assigned before
+#
+# REQUIREMENTS:
+# License needs to be assigned before
+# Export Worksheet Users from MSTeams-Runbook.xlsx as CSV file
 #
 # Version 1.0.0 (Build 1.0.0-2023-12-14)
 # 
